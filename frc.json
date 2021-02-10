@@ -1,0 +1,42 @@
+{
+    "cameras": [
+        {
+            "exposure": 4,
+            "fps": 30,
+            "height": 480,
+            "name": "Turret",
+            "path": "/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.2:1.0-video-index0",
+            "pixel format": "mjpeg",
+            "stream": {
+                "properties": [
+                    {
+                        "name": "compression",
+                        "value": 50
+                    }
+                ]
+            },
+            "white balance": 3500,
+            "width": 640
+        },
+        {
+            "fps": 30,
+            "height": 120,
+            "name": "Intake",
+            "path": "/dev/v4l/by-path/platform-fd500000.pcie-pci-0000:01:00.0-usb-0:1.1:1.0-video-index0",
+            "pixel format": "mjpeg",
+            "stream": {
+                "properties": [
+                    {
+                        "name": "compression",
+                        "value": 50
+                    }
+                ]
+            },
+            "white balance": 3500,
+            "width": 160
+        }
+    ],
+    "ntmode": "client",
+    "switched cameras": [],
+    "team": 4237
+}
