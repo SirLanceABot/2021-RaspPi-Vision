@@ -277,7 +277,7 @@ public class PipelineProcessE implements Runnable
 			{
 				// Display the camera frame in the output stream.
 				Imgproc.putText(mat, "Intake Contours", new Point(25, 30), Core.FONT_HERSHEY_SIMPLEX, 0.5,
-						new Scalar(100, 100, 255), 1);
+						new Scalar(255, 255, 0), 1);
 				outputStream.putFrame(mat);
 			}
 

@@ -30,14 +30,14 @@ public class GRIPPowerCellIntakeVisionPipeline {
 		// Step Blur0:
 		Mat blurInput = source0;
 		BlurType blurType = BlurType.get("Box Blur");
-		double blurRadius = 0.0;
+		double blurRadius = 1.;//0.0;
 		blur(blurInput, blurType, blurRadius, blurOutput);
 
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = blurOutput;
-		double[] hsvThresholdHue = {10.0, 50.0};
-		double[] hsvThresholdSaturation = {119.24460431654677, 239.76962457337885};
-		double[] hsvThresholdValue = {100.89928057553956, 255};
+		double[] hsvThresholdHue = {15.0, 50.0};
+		double[] hsvThresholdSaturation = {55., 255.};
+		double[] hsvThresholdValue = {15., 255};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		// Step Find_Contours0:
@@ -49,15 +49,15 @@ public class GRIPPowerCellIntakeVisionPipeline {
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
 		double filterContoursMinArea = 6.0;//100
 		double filterContoursMinPerimeter = 0.0;
-		double filterContoursMinWidth = 0.0;
-		double filterContoursMaxWidth = 1000.0;
-		double filterContoursMinHeight = 0.0;
-		double filterContoursMaxHeight = 1000.0;
+		double filterContoursMinWidth = 5.0;
+		double filterContoursMaxWidth = 200.0;
+		double filterContoursMinHeight = 5.0;
+		double filterContoursMaxHeight = 120.0;
 		double[] filterContoursSolidity = {0, 100};
 		double filterContoursMaxVertices = 1000000;
 		double filterContoursMinVertices = 0.0;
-		double filterContoursMinRatio = 0.1;//.1
-		double filterContoursMaxRatio = 0.9;//.8
+		double filterContoursMinRatio = 0.2;//.1
+		double filterContoursMaxRatio = 1.;//.8
 		filterContours(filterContoursContours, filterContoursMinArea, filterContoursMinPerimeter, filterContoursMinWidth, filterContoursMaxWidth, filterContoursMinHeight, filterContoursMaxHeight, filterContoursSolidity, filterContoursMaxVertices, filterContoursMinVertices, filterContoursMinRatio, filterContoursMaxRatio, filterContoursOutput);
 
 	}

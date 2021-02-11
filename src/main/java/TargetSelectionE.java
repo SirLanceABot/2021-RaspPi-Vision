@@ -2,6 +2,7 @@ import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 
 import org.opencv.core.Core;
+import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.MatOfPoint;
 import org.opencv.core.Point;
@@ -55,14 +56,15 @@ public class TargetSelectionE
 	 */
 	public void process(Mat mat, TargetDataE nextTargetData)
 	{
+		Mat matForHough = Mat.zeros(0, 0, CvType.CV_8UC1);
   		double centerTarget = 5;
 		int distanceTarget = Integer.MIN_VALUE;
 		boolean isTargetFoundLocal = true;
 		// Let the gripPowerCellIntakeVisionPipeline filter through the camera frame
 		gripPowerCellIntakeVisionPipeline.process(mat);
 
-		gripPowerCellIntakeVisionPipeline.hsvThresholdOutput().copyTo(mat);
-        detectPowerCells(mat);
+		gripPowerCellIntakeVisionPipeline.hsvThresholdOutput().copyTo(matForHough);
+        detectPowerCells(matForHough, mat);
 
 		// The gripPowerCellIntakeVisionPipeline creates an array of contours that must be searched to find
 		// the target.
@@ -78,7 +80,7 @@ public class TargetSelectionE
 
 				// Display a message if no contours are found.
 				Imgproc.putText(mat, "No Contours", new Point(20, 20), Core.FONT_HERSHEY_SIMPLEX, 0.25,
-						new Scalar(255, 255, 255), 1);
+						new Scalar(255, 255, 0), 1);
 			}
 
 		}
@@ -90,9 +92,9 @@ public class TargetSelectionE
 
 				// Draw all contours at once (negative index).
 				// Positive thickness means not filled, negative thickness means filled.
-				Imgproc.drawContours(mat, filteredContours, -1, new Scalar(255, 255, 255), 2);
+				Imgproc.drawContours(mat, filteredContours, -1, new Scalar(255, 255, 0), 2);
 			}
-			Imgproc.drawContours(mat, filteredContours, -1, new Scalar(255, 0, 0), 1);
+			Imgproc.drawContours(mat, filteredContours, -1, new Scalar(255, 255, 0), 1);
 		}
 
 		//Update the target
@@ -109,31 +111,44 @@ public class TargetSelectionE
 		gripPowerCellIntakeVisionPipeline.releaseAll();
 	}
 	
-	 public void detectPowerCells(Mat input) 
+	 public void detectPowerCells(Mat input, Mat output) 
     {
         desaturate(input, input);
         Mat circles = new Mat();
         Imgproc.blur(input, input, new Size(7, 7), new Point(2, 2));
 		
 	// Tuning HoughCircles is tricky - read the help by hovering over the method name to set circle size to search for
-	// and how close together they can be.
-	// Additional explanation of param1 and 2:
-	// param1: sensitivity of strength of edge
-	//	too high - no edges detected
-	//	too low - too much clutter
-	// param2: how many edge points needed to find a circle
-	//	too low and everything is a circle.  It's related to circumference. Accumulator Threshold
-
+	// and how close together they can be.  No hovering in FRC OpenCV
         //Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 2, 100, 100, 90, 0, 1000);
-        Imgproc.HoughCircles(input, circles, Imgproc.CV_HOUGH_GRADIENT, 1, input.rows()/8, 50, 30, 10, 38);
-        
+        Imgproc.HoughCircles(
+			input, //Input image (grayscale).
+			circles, //A vector that stores sets of 3 values: xc,yc,r for each detected circle.
+			Imgproc.CV_HOUGH_GRADIENT, //Define the detection method. Currently this is the only one available in OpenCV.
+			1., //The inverse ratio of resolution.
+			input.rows()/8, //Minimum distance between detected centers.
+			200., //param_1: Upper threshold for the internal Canny edge detector.
+				// param1: sensitivity of strength of edge
+					//	too high - no edges detected
+					//	too low - too much clutter
+			10., //param_2: Threshold for center detection.
+					// param2: how many edge points needed to find a circle
+					//	too low and everything is a circle.  It's related to circumference. Accumulator Threshold
+			2, //Minimum radius to be detected. If unknown, put zero as default.
+			38 //Maximum radius to be detected. If unknown, put zero as default.
+			);
+		
+			// Imgproc.HoughCircles(gray, circles, Imgproc.HOUGH_GRADIENT, 1.0,
+			// (double)gray.rows()/16, // change this value to detect circles with different distances to each other
+			// 100.0, 30.0, 1, 30); // change the last two parameters
+
+
         //System.out.println(String.valueOf("size: " + circles.cols()) + ", " + String.valueOf(circles.rows()));
         //System.out.println("size: " + circles.cols() + ", " + circles.rows());
 
         if (circles.cols() > 0) 
         {
+			System.out.println("Hough Circles=" + circles.cols());
 			// debug output Print the circle contours
-
 			//System.out.println("Contour Index = " + contourIndex);
 			//System.out.println(contour.dump()); // OpenCV Mat dump one line string of numbers
 			// or more control over formating with your own array to manipualte
@@ -155,12 +170,12 @@ public class TargetSelectionE
                 int radius = (int) circleVec[2];
                 //System.out.println(" x, y, r " + (circleVec[0]) + " " + (circleVec[1]) + " " + (circleVec[2]));
 
-                Imgproc.circle(input, center, 3, new Scalar(255, 255, 255), 5);
-                Imgproc.circle(input, center, radius, new Scalar(255, 255, 255), 2);
+                Imgproc.circle(output, center, 1, new Scalar(70, 255, 70), 5);
+                Imgproc.circle(output, center, radius, new Scalar(70, 255, 70), 2);
             }
         }
 
-        Imgproc.putText(input, "HoughCircles", new Point(20, 20), Core.FONT_HERSHEY_SIMPLEX, 0.25, new Scalar(190, 190, 190), 1);
+        Imgproc.putText(output, "HoughCircles", new Point(20, 20), Core.FONT_HERSHEY_SIMPLEX, 0.25, new Scalar(70, 255, 70), 1);
 
         circles.release();
         //input.release();
