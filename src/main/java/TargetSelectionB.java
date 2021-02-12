@@ -630,7 +630,7 @@ public class TargetSelectionB {
 // https://en.wikipedia.org/wiki/Kernel_(image_processing)
 // // sharpen image
 // blur is low pass filter
-// subtract the low frequencies from the orignal leaving the middle and higher
+// subtract the low frequencies from the original leaving the middle and higher
 // frequencies
 // cv::Mat image = cv::imread(file);
 // cv::Mat gaussBlur;

@@ -7,7 +7,7 @@ Table lookup of X, Y co-ordinates
 Features and limitations:
 Given an independent variable value a dependent value is returned
 Straight line interpolation between table entries
-Double.NEGATIVE_INFINITY and Double.POSITIVE_INFINITY independent values are infered as extensions of the first and last table entries
+Double.NEGATIVE_INFINITY and Double.POSITIVE_INFINITY independent values are inferred as extensions of the first and last table entries
     that is all values less than the first table entry to *.lookup(Double.NEGATIVE_INFINITY) return the first table entry as extrapolation
     and similarly all values greater than the last table entry to *.lookup(Double.POSITIVE_INFINITY) return the last table entry as
     extrapolation.  If this is inappropriate for the usage then make sure the first and last data points bound the possible data to
@@ -15,7 +15,7 @@ Double.NEGATIVE_INFINITY and Double.POSITIVE_INFINITY independent values are inf
 Not much is optimized for anything except easy to program and easy to use.
     That implies relatively few table entries.
     Data must be added to the table with the independent variable increasing from the previous entry.
-    Program searchs for the appropriate table entries by brute force starting at the first table entry and checks until data found.
+    Program searches for the appropriate table entries by brute force starting at the first table entry and checks until data found.
     Each interpolation request is from equation of line with 2 points instead of slightly more efficient slope/intercept.
 Interpolation (lookup) returns NaN on any error
 
@@ -27,7 +27,7 @@ Example usage:
         LUT conversion = x.new LUT(10); // allocate fixed size array with parameter at least as large as the number of data points - minimum of 2 points
         conversion.add(1.0, 100.); // enter X, Y co-ordinate
         conversion.add(2.5, 200.); // enter the data in X ascending order, must add at least 2 data points
-        System.out.println("1.5 Converted to " + conversion.lookup(1.5)); // lookup returns the value of Y coresponding to the X parameter
+        System.out.println("1.5 Converted to " + conversion.lookup(1.5)); // lookup returns the value of Y corresponding to the X parameter
         System.out.println(conversion); // print the whole table
     }
 */

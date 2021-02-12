@@ -27,7 +27,7 @@ public class TargetDataE
     boolean isTargetFound;
     
     /**
-     * Default contructor - resets all of the target data.
+     * Default constructor - resets all of the target data.
      */
     public TargetDataE()
     {

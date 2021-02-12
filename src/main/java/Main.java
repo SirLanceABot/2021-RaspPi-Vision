@@ -6,7 +6,7 @@ the file.
 
 The program will exit immediately failing to read the frc.json.  Then the RPi should be functional enough to upload a new version.
 
-Note there are some settable parameters located below the SKULL in the right wide scroller.
+Note there are some settable parameters located below the SKULL in the right wide scroll window.
 
 The change from the standard FRCVISION example project is:
 
@@ -48,12 +48,12 @@ sudo mkdir /mnt/usb
 Directories for the camera images on the flash drive are automatically made if the flash drive is inserted before our program runs
    [program does this for you: mkdir /mnt/usb/B; mkdir /mnt/usb/BR; mkdir /mnt/usb/E; mkdir /mnt/usb/ER]
 
-Configure cameras [browser frcvision.local/]
+Configure cameras [browser wpilibpi.local/]
 The configuration file is then saved in /boot/frc.json
 
 Make a backup of the frc.json by copying it somewhere (example below is to the current working directory)
 Windows command line:
-scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@frcvision.local:/boot/frc.json frc.json
+scp -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no pi@wpilibpi.local:/boot/frc.json frc.json
 
 This program below starts execution in Main.java - main.java
 
@@ -209,7 +209,7 @@ public final class Main
         public int height;
 
         // Name	Type        Default     Value	Notes
-        // Show crosshair	Boolean     true	Show or hide a crosshair on the image
+        // Show crosshair	Boolean     true	Show or hide a cross-hair on the image
         // Crosshair color	Color	    "white"	Can be a string or a rgba integer
         // Show controls	Boolean	    true	Show or hide the stream controls
         // Rotation	        String	    "NONE"	Rotates the displayed image. One of ["NONE", "QUARTER_CW", "QUARTER_CCW", "HALF"]
@@ -303,11 +303,11 @@ public final class Main
 // Settable parameters for some outputs listed below
 // Settable parameters for some outputs listed below
 
-    static String version = "RPi Vision 2/10/2021"; // change this everytime
+    static String version = "RPi Vision 2/11/2021"; // change this every time
 
     static final int MAXIMUM_MESSAGE_LENGTH = 1024; // max length (or more) of UDP message from RPi to roboRIO.  Not normally changed but here for visibility
 
-    static boolean runTestUDPreceiver = false; // Self run UDP testor or pick another computer to send the target data to
+    static boolean runTestUDPreceiver = false; // Self run UDP tester or pick another computer to send the target data to
 
 // URL where driving messages are to be sent
 // This should be the roboRIO except if testing
@@ -326,7 +326,7 @@ public final class Main
 
     // cameras and contour processing for targeting and generated video streams can be switched on/off here
    
-    static boolean startTurretCamera = true; // control turrent camera
+    static boolean startTurretCamera = true; // control turret camera
     static boolean createTurretContours = true; // control targeting process for turret
     static boolean displayTurretContours = true; // false for match play // control display but still use the contours 
     static boolean turretTargetMatchShape = true; // perform shape matching to verify found target
@@ -762,7 +762,7 @@ public final class Main
     {
         // Name	Type            Default     Value	    Notes
         // -----------------    ---------   --------    ----------------------------------------------------
-        // Show crosshair	    Boolean     true	    Show or hide a crosshair on the image
+        // Show crosshair	    Boolean     true	    Show or hide a cross-hair on the image
         // Crosshair color	    Color	    "white"	    Can be a string or a rgba integer
         // Show controls	    Boolean	    true	    Show or hide the stream controls
         // Rotation	            String	    "NONE"	    Rotates the displayed image. 

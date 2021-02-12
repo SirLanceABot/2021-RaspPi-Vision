@@ -30,12 +30,12 @@ public class GRIPPowerCellIntakeVisionPipeline {
 		// Step Blur0:
 		Mat blurInput = source0;
 		BlurType blurType = BlurType.get("Box Blur");
-		double blurRadius = 1.;//0.0;
+		double blurRadius = 2.;//0.0;
 		blur(blurInput, blurType, blurRadius, blurOutput);
 
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = blurOutput;
-		double[] hsvThresholdHue = {15.0, 50.0};
+		double[] hsvThresholdHue = {20.0, 45.0};
 		double[] hsvThresholdSaturation = {55., 255.};
 		double[] hsvThresholdValue = {15., 255};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);

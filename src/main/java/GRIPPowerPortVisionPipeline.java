@@ -470,7 +470,7 @@ public class GRIPPowerPortVisionPipeline {
 	 * @param minWidth minimum width of a contour
 	 * @param maxWidth maximum width
 	 * @param minHeight minimum height
-	 * @param maxHeight maximimum height
+	 * @param maxHeight maximum height
 	 * @param Solidity the minimum and maximum solidity of a contour
 	 * @param minVertexCount minimum vertex Count of the contours
 	 * @param maxVertexCount maximum vertex Count

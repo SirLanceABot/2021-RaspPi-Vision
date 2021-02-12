@@ -56,6 +56,7 @@ public class UdpReceive implements Runnable {
         public void run()
         {
             System.out.print(pId + System.currentTimeMillis());
+
             if (newTargetDataTurret.isFreshData) // see if there is new data
             {
                 TargetDataTurret = newTargetDataTurret.get(); // new data so copy it to private storage for the loop to use
@@ -63,6 +64,14 @@ public class UdpReceive implements Runnable {
             }
             else
                 System.out.println(" Stale Turret"); // no new data so do something appropriate with the old data
+ 
+            if (newTargetDataIntake.isFreshData) // see if there is new data
+            {
+                TargetDataIntake = newTargetDataIntake.get(); // new data so copy it to private storage for the loop to use
+                System.out.println(" Intake " + TargetDataIntake); // new data to be used appropriately; call various getters as needed
+            }
+            else
+                System.out.println(" Stale Intake"); // no new data so do something appropriate with the old data
         }
     }
     //

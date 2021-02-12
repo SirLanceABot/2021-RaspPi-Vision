@@ -153,7 +153,7 @@ public class PipelineProcessE implements Runnable
 
 		if (Main.displayIntakeContours)
 		{
-			outputStream = CameraServer.getInstance().putVideo("IntakeContours", 320, 240);
+			outputStream = CameraServer.getInstance().putVideo("IntakeContours", 160, 120);
 		}
 		
         // //////////////////
@@ -214,7 +214,7 @@ public class PipelineProcessE implements Runnable
 				continue;
 			}
 			
-			// Scaling if needed to reduce ethernet load might go here
+			// Scaling if needed to reduce Ethernet load might go here
 			// input mat must not be output mat
 			// Imgproc.resize(mat, differentmat, new Size(), 0.8, 0.8, Imgproc.INTER_AREA);
 

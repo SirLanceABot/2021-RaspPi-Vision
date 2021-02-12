@@ -214,7 +214,7 @@ public class PipelineProcessB implements Runnable
 				continue;
 			}
 
-			// Scaling if needed to reduce ethernet load might go here
+			// Scaling if needed to reduce Ethernet load might go here
 			// input mat must not be output mat
 			// Imgproc.resize(mat, differentmat, new Size(), 0.8, 0.8, Imgproc.INTER_AREA);
 
