@@ -30,7 +30,7 @@ RaspBerry Pi setup:
 RaspBerry Pi setup:
 
 Download frcvision image (from some WPI Github repository)
-(currently https://github.com/wpilibsuite/FRCVision-pi-gen/releases)
+(currently https://github.com/wpilibsuite/WPILibPi/releases)
 
 Load image on Micro SD card with balenaEtcher [or others]
 
@@ -653,7 +653,7 @@ public final class Main
             if (logImage)
             {
                 System.out.println(pId + " Flash Drive Mounted /mnt/usb and image logging is on");
-                // mkdir in case they don't exist. Don't bother checking for existance - just do
+                // mkdir in case they don't exist. Don't bother checking for existence - just do
                 // it.
 
                 command.add("bash");
