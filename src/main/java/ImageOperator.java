@@ -123,7 +123,7 @@ public class ImageOperator implements Runnable {
                 }
 
                 Core.transpose(targetIconTemp, targetIconTemp); // camera is rotated so make image look right for humans
-                Core.flip(targetIconTemp, targetIconTemp, 0);
+                Core.flip(targetIconTemp, targetIconTemp, 1);
 
                 // if there is a target, then color it white if good shape and red for poor shape
                 // if no target, leave the image alone and maybe the operator can recognize it (but I doubt it)
@@ -163,9 +163,9 @@ public class ImageOperator implements Runnable {
                     Imgproc.putText(mat, "inches", new Point(mat.width() - 37, 22),
                         Core.FONT_HERSHEY_SIMPLEX, .3, new Scalar(255, 255, 255), 1);
                     
-                    // where center of camera frame is pointing (relative to the target)
+                    // where center of camera frame is pointing relative to the target (negative of angle to turn)
                     int offset = (int)
-                        ( ((double)mat.width()/VERTICAL_CAMERA_ANGLE_OF_VIEW)*angleToTurn + (double)mat.width()/2.0 );
+                        ( ((double)mat.width()/VERTICAL_CAMERA_ANGLE_OF_VIEW)*(-angleToTurn) + (double)mat.width()/2.0 );
 
                     // Draw the white cross representing the center of the camera frame.
                     Imgproc.drawMarker(mat, new Point(offset, (int)(mat.height() / 2.0)), 

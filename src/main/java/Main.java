@@ -267,6 +267,10 @@ public final class Main
     static Object tapeLock;
     static boolean isDistanceAngleFresh = false;
     static double calibrateAngle;
+    // note that the targetIcon below is sourced from the mat that has the original camera image
+    // plus any "debug" information written on it such as the HSV histogram, contour outline,
+    // bounding box, rotated bounding box, and text titles.  This causes a slightly noisy image to
+    // appear as that extraneous information (to targeting) encroaches.
     static Mat targetIcon = new Mat();
 
 // Settable parameters for some outputs listed below the skull
@@ -303,7 +307,7 @@ public final class Main
 // Settable parameters for some outputs listed below
 // Settable parameters for some outputs listed below
 
-    static String version = "RPi Vision 2/11/2021"; // change this every time
+    static String version = "RPi Vision 2/16/2021"; // change this every time
 
     static final int MAXIMUM_MESSAGE_LENGTH = 1024; // max length (or more) of UDP message from RPi to roboRIO.  Not normally changed but here for visibility
 

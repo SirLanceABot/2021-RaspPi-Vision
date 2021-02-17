@@ -205,7 +205,7 @@ public class TargetSelectionB {
                                // contours
         int contourIndexBest = -1;
         double shapeMatch = Double.MAX_VALUE; // initialize for best shaped contour - max is worst possible match
-        Main.targetIcon = Mat.zeros(24, 24, CvType.CV_8UC3);  // initialize target Icon
+        //Main.targetIcon = Mat.zeros(24, 24, CvType.CV_8UC3);  // initialize target Icon
 
         // Check if no contours were found in the camera frame.
         if (filteredContours.isEmpty()) {
@@ -551,7 +551,7 @@ public class TargetSelectionB {
             Main.isDistanceAngleFresh = nextTargetData.isFreshData;
             Main.tapeLock.notify();
         }
-        
+
         targetIconTemp.release();
         gripPowerPortVisionPipeline.releaseAll();
     }
