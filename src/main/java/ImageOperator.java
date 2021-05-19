@@ -126,18 +126,18 @@ public class ImageOperator implements Runnable {
                 Core.flip(targetIconTemp, targetIconTemp, 1);
 
                 // if there is a target, then color it white if good shape and red for poor shape
-                // if no target, leave the image alone and maybe the operator can recognize it (but I doubt it)
-                if( isTargetFound ) {
-                    for (int idxr = 0; idxr <24; idxr++)
-                    for (int idxc = 0; idxc <24; idxc++) {
-                        double[] pixel = {0,0,0};
-                        pixel = targetIconTemp.get(idxr, idxc);
-                        if ( pixel[0] > 40 || pixel[1] > 40 || pixel[2] > 40) {
-                            if(shapeQuality > Main.shapeQualityBad) targetIconTemp.put(idxr, idxc, new byte[]{90, 120, -1});
-                            else targetIconTemp.put(idxr, idxc, new byte[]{-1,-1,-1}); // byte -1 is 0xff or 255
-                    }
-                    }
+                // if no target, color it white and maybe the operator can recognize it if it's
+                // green LED but failed the filter contours
+                for (int idxr = 0; idxr <24; idxr++)
+                for (int idxc = 0; idxc <24; idxc++) {
+                    double[] pixel = {0,0,0};
+                    pixel = targetIconTemp.get(idxr, idxc);
+                    if ( pixel[0] > 40 || pixel[1] > 40 || pixel[2] > 40) { // anything bright enough to almost see?
+                        if((shapeQuality > Main.shapeQualityBad) && isTargetFound) targetIconTemp.put(idxr, idxc, new byte[]{90, 120, -1});
+                        else targetIconTemp.put(idxr, idxc, new byte[]{-1,-1,-1}); // byte -1 is 0xff or 255
                 }
+                }
+
                 // draw the target icon in the center of the camera frame
                 targetIconTemp.copyTo(mat.submat(0, 24, (mat.width()/2)-12, (mat.width()/2)+12));
                 

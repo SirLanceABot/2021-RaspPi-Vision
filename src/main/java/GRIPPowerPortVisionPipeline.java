@@ -142,7 +142,7 @@ public class GRIPPowerPortVisionPipeline {
 		double filterContoursMaxWidth = 1000.0;
 		double filterContoursMinHeight = 0.0;
 		double filterContoursMaxHeight = 1000.0;
-		double[] filterContoursSolidity = {0, 100};
+		double[] filterContoursSolidity = {20, 60};  // highly useful for the mostly open trapezoid
 		double filterContoursMaxVertices = 1000000.0;
 		double filterContoursMinVertices = 0.0;
 		double filterContoursMinRatio = 0.0;
@@ -481,7 +481,7 @@ public class GRIPPowerPortVisionPipeline {
 		double minPerimeter, double minWidth, double maxWidth, double minHeight, double
 		maxHeight, double[] solidity, double maxVertexCount, double minVertexCount, double
 		minRatio, double maxRatio, List<MatOfPoint> output) {
-		// final MatOfInt hull = new MatOfInt();
+		final MatOfInt hull = new MatOfInt();
 		output.clear();
 		//operation
 		for (int i = 0; i < inputContours.size(); i++) {
@@ -491,7 +491,7 @@ public class GRIPPowerPortVisionPipeline {
 			if (bb.height < minHeight || bb.height > maxHeight) continue;
 			final double area = Imgproc.contourArea(contour);
 			if (area < minArea) continue;
-			/** Commented to improve processing time
+			// NOT! /** Commented to improve processing time
 			if (Imgproc.arcLength(new MatOfPoint2f(contour.toArray()), true) < minPerimeter) continue;
 			Imgproc.convexHull(contour, hull);
 			MatOfPoint mopHull = new MatOfPoint();
@@ -502,11 +502,12 @@ public class GRIPPowerPortVisionPipeline {
 				mopHull.put(j, 0, point);
 			}
 			final double solid = 100 * area / Imgproc.contourArea(mopHull);
+			//System.out.println("solid " + solid);
 			if (solid < solidity[0] || solid > solidity[1]) continue;
 			if (contour.rows() < minVertexCount || contour.rows() > maxVertexCount)	continue;
 			final double ratio = bb.width / (double)bb.height;
 			if (ratio < minRatio || ratio > maxRatio) continue;
-			*/
+			//*/
 			output.add(contour);
 		}
 		//hull.release();

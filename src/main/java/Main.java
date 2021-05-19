@@ -8,7 +8,7 @@ The program will exit immediately failing to read the frc.json.  Then the RPi sh
 
 Note there are some settable parameters located below the SKULL in the right wide scroll window.
 
-The change from the standard FRCVISION example project is:
+The change from the standard WPILibPi example project is:
 
 To get rid of "errors" in the VS Code source presentation, change the .classpath to see the libraries as needed.
 As of the early 2020 release this wasn't necessary but the build.gradle needs to have the correct dependencies.
@@ -29,7 +29,7 @@ RaspBerry Pi setup:
 RaspBerry Pi setup:
 RaspBerry Pi setup:
 
-Download frcvision image (from some WPI Github repository)
+Download wpilibpi image (from some WPI Github repository)
 (currently https://github.com/wpilibsuite/WPILibPi/releases)
 
 Load image on Micro SD card with balenaEtcher [or others]
@@ -110,6 +110,7 @@ import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpiutil.CircularBuffer;
 
 /*
    JSON format:  Note that the < and > are not entered in the file
@@ -271,8 +272,11 @@ public final class Main
     // plus any "debug" information written on it such as the HSV histogram, contour outline,
     // bounding box, rotated bounding box, and text titles.  This causes a slightly noisy image to
     // appear as that extraneous information (to targeting) encroaches.
+    // Severe jpg image compression also can introduce various strange distorting artifacts.
     static Mat targetIcon = new Mat();
 
+    static CircularBuffer angleHistory = new CircularBuffer(100);
+    
 // Settable parameters for some outputs listed below the skull
 
 
@@ -307,7 +311,7 @@ public final class Main
 // Settable parameters for some outputs listed below
 // Settable parameters for some outputs listed below
 
-    static String version = "RPi Vision 2/16/2021"; // change this every time
+    static String version = "RPi Vision 5/19/2021"; // change this every time
 
     static final int MAXIMUM_MESSAGE_LENGTH = 1024; // max length (or more) of UDP message from RPi to roboRIO.  Not normally changed but here for visibility
 
@@ -323,7 +327,7 @@ public final class Main
     static String Self = "wpilibpi.local";
     static String roboRIOIP = "10.42.37.2"; // usually preferred using static IP address of the roboRIO
 
-    static String UDPreceiverName = roboRIOIP;
+    static String UDPreceiverName = roboRIO;
  
     // static String UDPreceiverName = "0.0.0.0";
     // "0.0.0.0" should be any computer but doesn't work anymore for other computers - they don't see any packets
@@ -334,7 +338,7 @@ public final class Main
     static boolean createTurretContours = true; // control targeting process for turret
     static boolean displayTurretContours = true; // false for match play // control display but still use the contours 
     static boolean turretTargetMatchShape = true; // perform shape matching to verify found target
-    static double shapeQualityBad = 9.;  // maximum value before declaring detected target shape is bad - less is tighter tolerance 
+    static double shapeQualityBad = 9.;  // maximum value before declaring detected target shape is bad - less is tighter tolerance; one measure of several 
 
     static boolean runImageOperator = true; // control creation and display of the operator turret target icon
 

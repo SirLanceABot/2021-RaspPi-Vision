@@ -45,19 +45,22 @@ public class TargetSelectionB {
     // This field is used to determine if debugging information should be displayed.
     private boolean debuggingEnabled = false;
 
+    //private static int printCount = 0;
+
     // Pixels to Inches Data Table Lookup
     LUT pixelsToInchesTable = new LUT(10); // allocate fixed size array with parameter at least as large as the number
                                            // of data points - minimum of 2 points
     // allocate these in common so they can be drawn later
-    // MatOfPoint idealTurretContour = new MatOfPoint();
+    MatOfPoint idealTurretContour = new MatOfPoint();
     // MatOfPoint belowFrontTurretContour = new MatOfPoint();
     // MatOfPoint belowSlightlyLeftTurretContour = new MatOfPoint();
     MatOfPoint belowRightTurretContour = new MatOfPoint();
 
     Mat idealTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
     Mat belowRightTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
-   // Mat belowFrontTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
-    //Mat belowSlightlyLeftTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
+    // Mat belowFrontTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
+    // Mat belowSlightlyLeftTurretContourMomentsHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat to quiet the compiler likely overkill but descriptive
+    private int HuCompareNormalizationMethod = 1; // methods 0 to 6 method [1] used for matching; others better? method [0] is terrible
     
     TargetSelectionB() {
 
@@ -79,9 +82,12 @@ public class TargetSelectionB {
         // setup ideal target shape to compare with camera image found contour
         // this can vary greatly with perspective distortion so this might have to be
         // dynamically generated based on distance, angles, etc.
-        //FIXME: better to use expected typical shape assuming the distortion of perspective
+        // Seems like it should be better to use expected typical shape assuming the distortion of perspective.
+        // So far it doesn't seem that way!  In "noisy" images with extra bars of green light for some reason
+        // the Hu moments of the bars were closer to the belowRight ideal contour than a straight-on actual was
+        // to the ideal front contour.  Couldn't figure out why so used SOLIDITY in the "GRIP" pipeline
+        // to get rid of bars (the trapezoid is highly open - about 35% to 40%).
 
-        MatOfPoint idealTurretContour = new MatOfPoint();
         idealTurretContour.fromArray( // High Power Port Tape Contour - 2D drawing - no perspective warp
             new Point(13.,  3.),   // point 0
             new Point(68.,  109.),   // point 1
@@ -98,14 +104,13 @@ public class TargetSelectionB {
 
         // from crude hand pointing camera at small model in rkt basement
 
-        //MatOfPoint belowRightTurretContour = new MatOfPoint();
         belowRightTurretContour.fromArray(
             new Point(229., 136.),
             new Point(228., 143.),
             new Point(235., 158.),
             new Point(251., 162.),
             new Point(266., 164.),//bottom right
-            new Point(261., 157.),//
+            new Point(261., 157.),
             new Point(240., 153.),
             new Point(238., 151.),
             new Point(236., 141.),
@@ -116,10 +121,9 @@ public class TargetSelectionB {
         //System.out.println(belowRightTurretContour);
 
         Moments belowRightTurretContourMoments = Imgproc.moments(belowRightTurretContour);
-        //belowRightTurretContour.release();
+        belowRightTurretContour.release();
         Imgproc.HuMoments(belowRightTurretContourMoments, belowRightTurretContourMomentsHu);
 
-        // //MatOfPoint belowFrontTurretContour = new MatOfPoint();
         // belowFrontTurretContour.fromArray(
         //     new Point(494., 131.),
         //     new Point(414., 183.),
@@ -135,7 +139,6 @@ public class TargetSelectionB {
         // //belowFrontTurretContour.release();
         // Imgproc.HuMoments(belowFrontTurretContourMoments, belowFrontTurretContourMomentsHu);
 
-        // //MatOfPoint belowSlightlyLeftTurretContour = new MatOfPoint();
         // belowSlightlyLeftTurretContour.fromArray(
         //     new Point(151., 249.),
         //     new Point(105., 272.),
@@ -172,6 +175,10 @@ public class TargetSelectionB {
      */
     public void process(Mat mat, TargetDataB nextTargetData) {
 
+        // printCount++;
+        // if(printCount > 10) printCount = 1;
+        // else printCount++;
+
         // Let the GRIPPowerPortVisionPipeline filter through the camera frame
         gripPowerPortVisionPipeline.process(mat);
 
@@ -201,8 +208,7 @@ public class TargetSelectionB {
         // be searched to find the target.
         ArrayList<MatOfPoint> filteredContours;
         filteredContours = new ArrayList<MatOfPoint>(gripPowerPortVisionPipeline.filterContoursOutput());
-        int contourIndex = -1; // initialize here - using same value to indicate no contours and count
-                               // contours
+        int contourIndex = -1; // initialize here - using same value to indicate no contours and count contours
         int contourIndexBest = -1;
         double shapeMatch = Double.MAX_VALUE; // initialize for best shaped contour - max is worst possible match
         //Main.targetIcon = Mat.zeros(24, 24, CvType.CV_8UC3);  // initialize target Icon
@@ -342,10 +348,10 @@ public class TargetSelectionB {
                     // it for us.
  
                     Moments moments;
-                    Mat actualHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat - need to quiet the compiler but
-                                                                     // zeros is likely overkill
+                    Mat actualHu = Mat.zeros(7, 1, CvType.CV_64FC1); // initialize mat - need to quiet the compiler but zeros is likely overkill
 
-                    moments = Imgproc.moments(filteredContours.get(contourIndex));
+                    //moments = Imgproc.moments(filteredContours.get(contourIndex)); // same statement as the one below
+                    moments = Imgproc.moments(contour);
                     Imgproc.HuMoments(moments, actualHu);
                     //System.out.println(belowRightTurretContourMomentsHu);
                     // Hu moment #7 opposite signs indicates mirror image - didn't seem to work here, though.
@@ -359,13 +365,33 @@ public class TargetSelectionB {
                     //     System.out.println("below right Hu moments 7 differ");
                     // }
 
-                    compare = MatchShapes.matchShapes(actualHu, idealTurretContourMomentsHu);
+                    // wipeout the I7 to suppress checking for mirror similarity - we don't care and it causes some jitter
+                    actualHu.put(6, 0, 0.);
+                    idealTurretContourMomentsHu.put(6, 0, 0.);
+                    belowRightTurretContourMomentsHu.put(6, 0, 0.);
+                    compare = MatchShapes.matchShapes(idealTurretContourMomentsHu, actualHu);
                     // test out comparison with 3 other shapes expected due to perspective distortion
-                    compareR = MatchShapes.matchShapes(actualHu, belowRightTurretContourMomentsHu); 
+                    compareR = MatchShapes.matchShapes(belowRightTurretContourMomentsHu, actualHu); 
                     // compareF = MatchShapes.matchShapes(actualHu, belowFrontTurretContourMomentsHu);
                     // compareL = MatchShapes.matchShapes(actualHu, belowSlightlyLeftTurretContourMomentsHu);
+                    // some jitter in the last Hu moment
+                    // if (printCount == 1) {
+                    //     System.out.println("contour " + contourIndex + " " + compare[HuCompareNormalizationMethod] + " " + compareR[HuCompareNormalizationMethod]);
+                    //     printHu("front", idealTurretContourMomentsHu);
+                    //     printHu("right", belowRightTurretContourMomentsHu);
+                    //     printHu("actual", actualHu);
+                    // }
+
+                    // trying to eliminate bar contours - those without higher moments (didn't much help)
+                    double eps = 1.e-5;
+                    if((Math.abs(actualHu.get(4, 0)[0]) < eps) && (Math.abs(actualHu.get(5, 0)[0]) < eps)) {
+                        compare[HuCompareNormalizationMethod] = Double.MAX_VALUE;
+                        compareR[HuCompareNormalizationMethod] = Double.MAX_VALUE;
+                    }
+
                     Imgproc.putText(mat,
-                        String.format("%3.0f%s%3.0f", compare[1], compareR[1] >= 10. ? " " : "       ", compareR[1]),
+                        String.format("%3.0f%s%3.0f",
+                            compare[HuCompareNormalizationMethod], compareR[HuCompareNormalizationMethod] >= 10. ? " " : "       ", compareR[HuCompareNormalizationMethod]),
                         boxPts[0],
                         Core.FONT_HERSHEY_SIMPLEX, 0.3,
                         new Scalar(255, 255, 255), 1);
@@ -393,12 +419,12 @@ public class TargetSelectionB {
                 // * shape checking is disabled.
                 // ******************************************* */
 
-                if (compare[1] <= shapeMatch || compareR[1] <= shapeMatch) { // method [1] used for matching; others better? method [0] is terrible
+                if (compare[HuCompareNormalizationMethod] <= shapeMatch || compareR[HuCompareNormalizationMethod] <= shapeMatch) {
                     // the if(=) case covers if only one contour
                     // or if optional shape matching wasn't run in which case the last contour wins
 
                     // save new best contour\
-                    shapeMatch = Math.min(compare[1], compareR[1]);
+                    shapeMatch = Math.min(compare[HuCompareNormalizationMethod], compareR[HuCompareNormalizationMethod]);
                     contourIndexBest = contourIndex;
 
                     // Find the corner points of the bounding rectangle and the image size
@@ -431,6 +457,7 @@ public class TargetSelectionB {
                         nextTargetData.isFreshData = true;
                         nextTargetData.isTargetFound = false;
                     } else { // target still in view
+                        Main.angleHistory.addLast(nextTargetData.angleToTurn); // save old angles for debugging insights
                         nextTargetData.portDistance = pixelsToInchesTable.lookup(boundRect.br().x);
                         nextTargetData.isFreshData = true;
                         nextTargetData.isTargetFound = true;
@@ -452,10 +479,10 @@ public class TargetSelectionB {
             } // end of looping through all contours
 
             // if (false ) {
-            // drawShape(idealTurretContour, mat);
-            // drawShape(belowFrontTurretContour, mat);
-            // drawShape(belowSlightlyLeftTurretContour, mat);
-            // drawShape(belowRightTurretContour, mat);
+            //  drawShape(idealTurretContour, mat);
+            //  drawShape(belowFrontTurretContour, mat);
+            //  drawShape(belowSlightlyLeftTurretContour, mat);
+            //  drawShape(belowRightTurretContour, mat);
             // }
   
             // display HSV histograms of the best contour - could do all the "best" contours in above loop
@@ -540,6 +567,12 @@ public class TargetSelectionB {
                 targetIconTemp, new Size(24, 24), 0., 0., Imgproc.INTER_LINEAR);
         }
 
+        for (int i = 0; i < 100; i++) {
+            // Draw marker representing history of angle to turn.
+            Imgproc.drawMarker(mat, new Point( i, 100+Math.min(36, (int)(Math.max(0., Main.angleHistory.get(i)+18.))) ), 
+                new Scalar(255, 255, 255), Imgproc.MARKER_STAR, 10);
+        }
+ 
         // update the target information with best contour or the initialized no contour data
         synchronized (Main.tapeLock) {
             Main.tapeDistance = nextTargetData.portDistance;
@@ -576,6 +609,12 @@ public class TargetSelectionB {
         // }
     }
 
+    void printHu(String label, Mat HuShape) {
+            double[] H = new double[7];
+            HuShape.get(0, 0, H);
+            System.out.format("%8s %8f, %8f, %8f, %8f, %8f, %8f, %8f]\n", label, H[0], H[1], H[2], H[3], H[4], H[5], H[6]);
+     }
+    
     String toString(double[] array) {
         return Arrays.stream(array)
                 .mapToObj(i -> String.format("%5.2f", i))
