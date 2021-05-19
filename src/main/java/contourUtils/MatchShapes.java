@@ -23,13 +23,16 @@ public class MatchShapes {
 
     // The last Hu moment, I7, is skew invariant, which enables it to distinguish,
     // with the flip in sign, mirror images of otherwise identical images.
-
+   
     // Mirror images will report as slightly different because of the I7. It seems
     // to me a better strategy to detect mirror images would be to verify I1-I6 are
     // very similar then check independently the I7 for similarity except for a sign
     // flip otherwise these two images will be reported as very similar differing
     // only because of the I7 differences globbed into the small I1 - I6
     // contributions.
+
+    // Expereince is I7 is a small number that is prone to significant jitter that
+    // flips the sign a lot, falsely indicating mirroring.
 
     // https://homepages.inf.ed.ac.uk/rbf/CVonline/LOCAL_COPIES/SHUTLER3/node8.html
     // https://en.wikipedia.org/wiki/Image_moment
@@ -41,6 +44,7 @@ public class MatchShapes {
 
     public static double[] matchShapes(Mat HuShape1, Mat HuShape2) {
         //Mat [ 7*1*CV_64FC1, isCont=true, isSubmat=false, nativeObj=0xffffffffb3f02c98, dataAddr=0xffffffffb3f02c00 ]
+        // compare[2] implies the first arg is the ideal target
         if ((HuShape1.rows() != 7) || (HuShape2.rows() != 7))
             throw new IllegalArgumentException("HuMoments must be 7x1");
         if ((HuShape1.cols() != 1) || (HuShape2.cols() != 1))
@@ -61,7 +65,7 @@ public class MatchShapes {
                 anyA = true;
             if (HuTemp2[idx] != 0.)
                 anyB = true;
-            if ((Math.abs(HuTemp1[idx]) > eps) && (Math.abs(HuTemp2[idx]) > eps)) {
+            if ((Math.abs(HuTemp1[idx]) > eps) && (Math.abs(HuTemp2[idx]) > eps)) { // don't compare a moment if either has a 0 for it
                 double mA = Math.copySign(Math.log10(Math.abs(HuTemp1[idx])), HuTemp1[idx]); // typically seen with
                                                                                              // minus sign in front
                 double mB = Math.copySign(Math.log10(Math.abs(HuTemp2[idx])), HuTemp2[idx]); // but don't bother since
@@ -69,8 +73,8 @@ public class MatchShapes {
                                                                                              // compares
                 compare[0] += Math.abs((1. / mA) - (1. / mB));
                 compare[1] += Math.abs(mA - mB);
-                compare[2] = Math.max(compare[2], Math.abs((mA - mB) / mA));
-                // additions to the OpenCV matchShapres start here
+                compare[2] = Math.max(compare[2], Math.abs((mA - mB) / mA)); // implies the first arg is the ideal target
+                // additions to the OpenCV matchShapes start here
                 // normalize to max absolute value
                 mA = HuTemp1[idx] / Math.max(Math.abs(HuTemp1[idx]), Math.abs(HuTemp2[idx]));
                 mB = HuTemp2[idx] / Math.max(Math.abs(HuTemp1[idx]), Math.abs(HuTemp2[idx]));
